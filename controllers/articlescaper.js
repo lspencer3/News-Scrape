@@ -19,6 +19,15 @@ mongoose.connect("mongodb://localhost/scraped_articles", {
 // Routes
 module.exports = function (app){
 // A GET route for scraping the abcnews website
+  app.get("/articles", function(req,res){
+     console.log("route working")
+    db.article
+            .find({})
+            .then(function(dbArticle) {
+              res.json(dbArticle)
+      })
+  })
+
 	app.get("/scrape", function(req, res) {
   		// First, we grab the body of the html with request
   		axios.get("http://abcnews.go.com/").then(function(response) {
@@ -34,8 +43,6 @@ module.exports = function (app){
 
       			var link = $(element).find("a").attr("href");
 
-      			//console.log(i,text, link)
-
       			result.title = text
       			result.link = link
 
@@ -43,17 +50,20 @@ module.exports = function (app){
      			 db.article
     			.find({ title: text })
     			.then(function(dbArticle) {
-	    			if(dbArticle){
+	    			if(dbArticle.length > 0){
 		    			console.log("already in database!")
-		    			res.send("already in database");
+              console.log(i,text, link)
+		    			res.send("already in database!");
 	   				}
 	    			else {
-				    	array.push(result)
+              console.log("this code is running to add a new article to mongo")
+              console.log(i,text, link)
+				    	/*array.push(result)
 				    	db.article
 				    	.create(result)
 				    	.then(function(dbArticle){
 				    		res.send(dbArticle)
-				    	})
+				    	})*/
    					}
     			})
     		});
